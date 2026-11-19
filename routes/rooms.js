@@ -8,19 +8,27 @@ var roomService = new RoomService(db);
 var { checkIfAuthorized } = require("./authMiddlewares")
 /* GET rooms listing. */
 router.get('/:hotelId', async function(req, res, next) {
-  const rooms =  await roomService.getHotelRooms(req.params.hotelId);
-  const userId = req.user?.id ?? 0;
-  const isAdmin = req.user?.role === "Admin";
-  const username = req.user?.username ?? 0;
-  res.render('rooms', { rooms: rooms, userId, username, isAdmin });
+  try {
+    const rooms =  await roomService.getHotelRooms(req.params.hotelId);
+    const userId = req.user?.id ?? 0;
+    const isAdmin = req.user?.role === "Admin";
+    const username = req.user?.username ?? 0;
+    res.render('rooms', { rooms: rooms, userId, username, isAdmin });
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.get('/', async function(req, res, next) {
-    const rooms = await roomService.get();
-    const userId = req.user?.id ?? 0;
-    const username = req.user?.username ?? 0;
-    const isAdmin = req.user?.role === "Admin";
-    res.render('rooms', { rooms: rooms, userId, username, isAdmin });
+  try {
+      const rooms = await roomService.get();
+      const userId = req.user?.id ?? 0;
+      const username = req.user?.username ?? 0;
+      const isAdmin = req.user?.role === "Admin";
+      res.render('rooms', { rooms: rooms, userId, username, isAdmin });
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.post('/', checkIfAuthorized, jsonParser, async function(req, res, next) {
